@@ -1,0 +1,121 @@
+" IdeaVim config for JetBrains IDEs (PyCharm etc.), mirroring my Neovim setup so the
+" editing model and leader keys carry across on client machines where Neovim's own
+" LSP/plugins aren't available but PyCharm is.
+"
+" Install: in the IDE, Settings > Plugins > IdeaVim (by JetBrains). Then point the IDE's
+" ideavimrc at this file by creating  ~/.ideavimrc  containing one line:
+"     source ~/AppData/Local/nvim/ideavimrc      (Windows)
+"     source ~/.config/nvim/ideavimrc            (macOS/Linux)
+" so it updates with `git pull`. Reload in-IDE with :source ~/.ideavimrc or the
+" "Reload .ideavimrc" action.
+"
+" PyCharm actions are invoked with <Action>(ActionId). List all ids with :actionlist,
+" or enable "IdeaVim: track action ids" to discover the one behind any menu command.
+
+" ---- Options (match lua/martin/core/options.lua) ----
+set number relativenumber
+set scrolloff=3
+set ignorecase smartcase
+set nowrap
+set clipboard+=unnamedplus
+set clipboard+=ideaput          " let yanks go through the IDE's clipboard/paste
+set incsearch
+set visualbell
+
+let mapleader = " "
+
+" ---- Emulated plugins (ship with IdeaVim) ----
+set surround                    " nvim-surround: ys/cs/ds, S in visual
+set commentary                  " Comment.nvim: gcc, gc{motion}, gc in visual
+set NERDTree                    " file-tree emulation driven below via the Project view
+set highlightedyank
+set which-key
+set notimeout                   " let which-key show without a timeout cutting it off
+set ideajoin                    " J uses the IDE's smart join
+
+" ---- General keymaps (match core/keymaps.lua) ----
+inoremap jk <Esc>
+nnoremap <leader>nh :nohl<CR>
+
+" keep selection when indenting
+vnoremap < <gv
+vnoremap > >gv
+
+" move selected lines up/down (Alt-j/k), via the IDE
+vnoremap <A-j> :action MoveLineDown<CR>gv
+vnoremap <A-k> :action MoveLineUp<CR>gv
+
+" increment / decrement (IdeaVim has native <C-a>/<C-x>)
+nnoremap <leader>+ <C-a>
+nnoremap <leader>- <C-x>
+
+" ---- Window splits (match <leader>s…) ----
+nnoremap <leader>sv :action SplitVertically<CR>
+nnoremap <leader>sh :action SplitHorizontally<CR>
+nnoremap <leader>se :action EqualSizeSplit<CR>
+nnoremap <leader>sx :action Unsplit<CR>
+
+" move between splits with Ctrl-h/j/k/l (as on the Mac, where this also crosses tmux panes)
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" ---- Editor tabs (closest to <leader>t…; PyCharm tabs ≠ vim tabs) ----
+nnoremap <leader>tn :action NextTab<CR>
+nnoremap <leader>tp :action PreviousTab<CR>
+nnoremap <leader>tx :action CloseContent<CR>
+
+" ---- Find / files (match telescope.lua <leader>f…) ----
+nnoremap <leader>ff :action GotoFile<CR>
+nnoremap <leader>fr :action RecentFiles<CR>
+nnoremap <leader>fs :action FindInPath<CR>
+nnoremap <leader>fc :action FindWordAtCaret<CR>
+nnoremap <leader>fb :action Switcher<CR>
+nnoremap <leader>ft :action ActivateTODOToolWindow<CR>
+
+" ---- File explorer (match nvim-tree <leader>e…) ----
+nnoremap <leader>ee :action ActivateProjectToolWindow<CR>
+nnoremap <leader>ef :action SelectInProjectView<CR>
+
+" ---- Code / LSP (match lsp/lspconfig.lua) ----
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gD :action GotoDeclaration<CR>
+nnoremap gi :action GotoImplementation<CR>
+nnoremap gt :action GotoTypeDeclaration<CR>
+nnoremap gR :action FindUsages<CR>
+nnoremap K  :action QuickJavaDoc<CR>
+nnoremap <leader>ca :action ShowIntentionActions<CR>
+vnoremap <leader>ca :action ShowIntentionActions<CR>
+nnoremap <leader>rn :action RenameElement<CR>
+nnoremap <leader>mp :action ReformatCode<CR>
+vnoremap <leader>mp :action ReformatCode<CR>
+
+" ---- Diagnostics (match [d / ]d / gl / <leader>D / Trouble <leader>x…) ----
+nnoremap [d :action GotoPreviousError<CR>
+nnoremap ]d :action GotoNextError<CR>
+nnoremap gl :action ShowErrorDescription<CR>
+nnoremap <leader>D  :action ActivateProblemsViewToolWindow<CR>
+nnoremap <leader>xw :action ActivateProblemsViewToolWindow<CR>
+nnoremap <leader>xd :action ActivateProblemsViewToolWindow<CR>
+nnoremap <leader>xt :action ActivateTODOToolWindow<CR>
+
+" ---- Git (match gitsigns ]h/[h, <leader>h…, lazygit <leader>lg) ----
+nnoremap ]h :action VcsShowNextChangeMarker<CR>
+nnoremap [h :action VcsShowPrevChangeMarker<CR>
+nnoremap <leader>hp :action VcsShowCurrentChangeMarker<CR>
+nnoremap <leader>hb :action Annotate<CR>
+nnoremap <leader>hd :action Compare.LastVersion<CR>
+nnoremap <leader>lg :action ActivateVersionControlToolWindow<CR>
+
+" ---- Debugging (match nvim-dap <leader>d…) ----
+nnoremap <leader>db :action ToggleLineBreakpoint<CR>
+nnoremap <leader>dc :action Resume<CR>
+nnoremap <leader>do :action StepOver<CR>
+nnoremap <leader>di :action StepInto<CR>
+nnoremap <leader>dO :action StepOut<CR>
+nnoremap <leader>dq :action Stop<CR>
+nnoremap <leader>du :action ActivateDebugToolWindow<CR>
+
+" Not mirrored (no clean IDE equivalent): substitute.nvim's bare `s`, <leader>l (nvim-lint),
+" <leader>rs (LspRestart), Obsidian notes. PyCharm covers formatting/linting on its own.

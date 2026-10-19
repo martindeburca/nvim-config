@@ -5,9 +5,10 @@ return {
 		"nvim-lua/plenary.nvim",
 		{
 			"nvim-telescope/telescope-fzf-native.nvim",
-			-- Windows has no `make`; build the native sorter with CMake (uses MSVC).
-			-- On Unix `make` is present, so keep the simpler command there.
+			-- Unix has `make`. On Windows, WinLibs GCC provides `mingw32-make` (the plugin's
+			-- Makefile builds libfzf.dll with gcc); without it, CMake builds with MSVC.
 			build = vim.fn.executable("make") == 1 and "make"
+				or vim.fn.executable("mingw32-make") == 1 and "mingw32-make"
 				or "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
 		},
 		"nvim-tree/nvim-web-devicons",

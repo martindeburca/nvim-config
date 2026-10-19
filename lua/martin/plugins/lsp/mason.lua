@@ -13,6 +13,11 @@ return {
 
     local mason_tool_installer = require("mason-tool-installer")
 
+    -- On a restricted machine the downloaded servers/formatters would be blocked by
+    -- application control, so don't ask Mason to install anything. Whatever is already
+    -- present (and the already-installed Mason UI) still works.
+    local restricted = require("martin.core.restricted").enabled()
+
     -- enable mason and configure icons
     mason.setup({
       ui = {
@@ -25,8 +30,8 @@ return {
     })
 
     mason_lspconfig.setup({
-      -- list of servers for mason to install
-      ensure_installed = {
+      -- list of servers for mason to install (none on a restricted machine)
+      ensure_installed = restricted and {} or {
         "ts_ls",
         "html",
         "cssls",
@@ -37,12 +42,12 @@ return {
       -- avoid auto-enabling before we configure vim.lsp.config in lspconfig.lua
       automatic_enable = false,
     })
-    
+
     mason_tool_installer.setup({
-      ensure_installed = {
+      ensure_installed = restricted and {} or {
         "prettier", -- prettier formatter
         "stylua", -- lua formatter
-        "eslint_d", -- js linter     
+        "eslint_d", -- js linter
       },
     })
   end,

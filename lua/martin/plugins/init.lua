@@ -27,7 +27,12 @@ return {
           vim.cmd("wincmd " .. wincmd)
           if cur == vim.api.nvim_get_current_win() then
             -- target this pane explicitly: --current means Herdr's globally focused pane
-            vim.fn.system({ herdr, "pane", "focus", "--direction", dir, "--pane", herdr_pane })
+            if vim.fn.has("win32") == 1 then
+              -- Windows: over Herdr's named pipe (the CLI takes ~1.3 s to start there)
+              require("martin.core.herdr_pipe").focus(dir, herdr_pane, herdr)
+            else
+              vim.fn.system({ herdr, "pane", "focus", "--direction", dir, "--pane", herdr_pane })
+            end
           end
         end
         for key, dir in pairs({ h = "left", j = "down", k = "up", l = "right" }) do

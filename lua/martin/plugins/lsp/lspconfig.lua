@@ -135,6 +135,24 @@ return {
       vim.lsp.config(server, config)
     end
 
+    -- On a restricted machine, only enable servers whose binary is actually on PATH
+    -- (e.g. a pyright that came through an approved Python/Node). Enabling one that is
+    -- missing just logs spawn errors, so filter them out for a clean start.
+    if require("martin.core.restricted").enabled() then
+      local cmd_for = {
+        ts_ls = "typescript-language-server",
+        html = "vscode-html-language-server",
+        cssls = "vscode-css-language-server",
+        svelte = "svelteserver",
+        lua_ls = "lua-language-server",
+        pyright = "pyright-langserver",
+        clangd = "clangd",
+      }
+      servers = vim.tbl_filter(function(s)
+        return vim.fn.executable(cmd_for[s] or s) == 1
+      end, servers)
+    end
+
     vim.lsp.enable(servers)
   end,
 }

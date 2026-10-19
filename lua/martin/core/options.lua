@@ -8,6 +8,13 @@ vim.cmd("let g:netrw_liststyle = 3")
 -- backend, so this is safe cross-platform.
 vim.env.CURL_HOME = vim.fn.stdpath("config") .. "/curl"
 
+-- Windows without MSVC (e.g. a client laptop, where Build Tools need admin): compile
+-- Treesitter parsers with GCC (WinLibs, installed per user by scripts/bootstrap-windows.ps1).
+-- `tree-sitter build` looks for MSVC unless CC names another compiler.
+if vim.fn.has("win32") == 1 and vim.fn.executable("cl") == 0 and vim.fn.executable("gcc") == 1 then
+  vim.env.CC = "gcc"
+end
+
 local opt = vim.opt -- for conciseness
 
 -- line numbers

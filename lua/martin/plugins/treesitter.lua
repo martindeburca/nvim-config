@@ -26,11 +26,14 @@ return {
     }
     -- exposed so scripts/bootstrap-mac.sh can install them all and wait for the compile
     vim.g.martin_ts_parsers = ensure_installed
+    -- A restricted machine has no compiler for parsers, so don't try to install them.
+    -- Any parser already present still highlights; the rest fall back to Vim syntax.
+    local restricted = require("martin.core.restricted").enabled()
     local installed = ts.get_installed()
     local missing = vim.tbl_filter(function(lang)
       return not vim.tbl_contains(installed, lang)
     end, ensure_installed)
-    if #missing > 0 then
+    if #missing > 0 and not restricted then
       ts.install(missing) -- async; compiles in the background
     end
 
